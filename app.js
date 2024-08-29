@@ -3,8 +3,10 @@ const app = express()
 
 console.log('im on a node server, yo');
 
+app.use(express.static('./'))
+
 app.get('/', function (req, res) {
-  res.send('Hello World')
+  res.sendFile('index.html')
 })
 
 app.listen(3000)
