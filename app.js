@@ -9,4 +9,13 @@ app.get('/', function (req, res) {
   res.sendFile('index.html')
 })
 
+app.get('/ejs', (req, res)=>{
+
+  res.render('index', {
+    myServerVarible : "something from server"
+  });
+
+   //can you get content from client...to console?
+})
+
 app.listen(3000)
