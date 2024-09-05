@@ -1,3 +1,4 @@
+require('dotenv').config('express')
 const express = require('express')
 const app = express()
 app.set('view engine', 'ejs')
@@ -5,7 +6,7 @@ app.use(express.static('./public/'))
 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = process.env.uri;
+const uri = process.env.MONGO_URI;
 
 console.log(uri);
 
@@ -32,7 +33,18 @@ async function run() {
 }
 run().catch(console.dir);
 
+app.get('/mongo', async (req, res)=>{
+  console.log('in /mongo');
+  await client.connect();
+  console.log("connected!");
+    // Send a ping to confirm a successful connection
+    let result = await client.db("daltons-db").collection("junkstuff-collection").find({}).toArray();
+    console.log(result);
 
+    res.render('mongo', {
+      mongoResult : result[0]
+    });
+})
 
 console.log('im on a node server, yo');
 
