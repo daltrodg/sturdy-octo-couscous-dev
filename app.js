@@ -1,9 +1,13 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
+const { urlencoded } = require('body-parser')
+const { ObjectId } = require('mongodb')
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://Dalton:${process.env.MONGO_URI}@cluster0.sv1mi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`; 
 
+app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'ejs')
 app.use(express.static('./public/'))
 
@@ -87,23 +91,19 @@ app.get('/insert', async (req,res)=> {
 
 });
 
-app.post('/update', async (req,res)=> {
+app.post('/update/:id', async (req,res)=> {
 
-  //connect to db 
-  console.log('in /update');
-  await client.connect();
-  //point to the connection
-  console.log('connected?');
-  // Send a ping to confirm a successful connection
-  
-  let result = await client.db("daltons-db").collection("junkstuff-collection")
-    .findOneandUpdate(
-      { 'post' : 'hardcoded post insert' }
-      //{ 'post' : ''}
-    ); 
-  console.log(result);
-  //insert into it 
-  res.render('insert');
+  console.log("req.parms.id: ", req.params.id)
+
+  client.connect; 
+  const collection = client.db("daltons-db").collection("junkstuff-collection");
+  let result = await collection.findOneAndUpdate( 
+  {"_id": new ObjectId(req.params.id)}
+)
+.then(result => {
+  console.log(result); 
+  res.redirect('/read');
+})
 
 });
 
