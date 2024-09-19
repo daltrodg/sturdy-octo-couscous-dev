@@ -1,3 +1,4 @@
+
 <!-- read from my mongo -->
 <h1>see my mongoDB results</h1>
 
@@ -6,10 +7,13 @@
  <% for (var i=0; i< mongoResult.length; i++ ) { %>
   <form method="POST" action="/update/<%=mongoResult[i]._id %>" style="display: inline-block">  
     <%=mongoResult[i].email %><br> 
-    <%=mongoResult[i].DOB %>
+    <%=mongoResult[i].DOB %> 
     <input type="submit" value="update"> 
+  </form>
+  <form method="POST" action="/delete/<%= mongoResult[i]._id %>" style="display: inline-block">  
+    <input type="submit" value="delete"> 
   </form>
   <br/>
 <% } %>
-
+<a href="/insert">Insert some stuff</a>
 <hr>

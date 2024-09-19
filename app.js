@@ -53,7 +53,7 @@ app.get('/read', async (req,res)=>{
     .find({}).toArray(); 
   console.log(result); 
 
-  res.render('mongo', {
+  res.render('read', {
     mongoResult : result
   });
 
@@ -98,13 +98,28 @@ app.post('/update/:id', async (req,res)=> {
   client.connect; 
   const collection = client.db("daltons-db").collection("junkstuff-collection");
   let result = await collection.findOneAndUpdate( 
-  {"_id": new ObjectId(req.params.id)}
+  {"_id": new ObjectId(req.params.id)}, {$set: {"email": "blahblah@yaya.com" } }
 )
 .then(result => {
   console.log(result); 
   res.redirect('/read');
 })
 
+});
+
+app.post('/delete/:id', async (req,res)=>{
+
+  console.log("req.parms.id: ", req.params.id)
+
+  client.connect; 
+  const collection = client.db("daltons-db").collection("junkstuff-collection");
+  let result = await collection.findOneAndDelete( 
+  {"_id": new ObjectId(req.params.id)})
+
+.then(result => {
+  console.log(result);
+  res.redirect('/read');
+})
 });
 
 app.listen(5000)
