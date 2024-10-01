@@ -4,6 +4,14 @@
 
 
 <h3> my db information</h3> 
+
+<form method="POST" action="/insert">
+  <label for="newPost">
+  <input id="newPost" name="newPost">
+  <input name="something">
+  <input type="submit" value="insert">
+</form>
+
  <% for (var i=0; i< mongoResult.length; i++ ) { %>
   <form method="POST" action="/update/<%=mongoResult[i]._id %>" style="display: inline-block">  
     <%=mongoResult[i].email %><br> 
