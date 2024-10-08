@@ -65,11 +65,10 @@ app.get('/', async function (req, res) {
   // res.send('Hello Node from Ex on local dev box')
   await client.connect();
   const results = await songData.find({}).toArray();
-  res.render('index.ejs', {songResults: results.reverse()});
+  res.render('index', {songResults: results.reverse()});
 })
 
 app.get('/ejs', (req,res)=>{
-``
   res.render('index', {
     myServerVariable : "something from server"
   });
@@ -84,7 +83,6 @@ app.post('/insert', async (req,res)=> {
   await client.connect();
   //point to the connection
   console.log('connected?');
-  // Send a ping to confirm a successful connection
   const {song, artist, link} = req.body;
   //const songObj = {songName: song, songArtist: artist, songLink: link};
   await songData.insertOne(req.body); 
@@ -97,15 +95,15 @@ app.post('/insert', async (req,res)=> {
 app.post('/update/:id', async (req,res)=> {
 
   console.log("req.parms.id: ", req.params.id)
+  console.log(req.body); 
 
   client.connect; 
-  const collection = client.db("daltons-db").collection("junkstuff-collection");
-  let result = await collection.findOneAndUpdate( 
-  {"_id": new ObjectId(req.params.id)}, {$set: {"email": "blahblah@yaya.com" } }
+  let result = await songData.findOneAndUpdate( 
+  {"_id": new ObjectId(req.params.id)}, {$set: {songArtist: req.body.artist} }
 )
 .then(result => {
   console.log(result); 
-  res.redirect('/read');
+  res.redirect('/');
 })
 
 });
@@ -115,13 +113,12 @@ app.post('/delete/:id', async (req,res)=>{
   console.log("req.parms.id: ", req.params.id)
 
   client.connect; 
-  const collection = client.db("daltons-db").collection("junkstuff-collection");
-  let result = await collection.findOneAndDelete( 
+  let result = await songData.findOneAndDelete( 
   {"_id": new ObjectId(req.params.id)})
 
 .then(result => {
   console.log(result);
-  res.redirect('/read');
+  res.redirect('/');
 })
 });
 
