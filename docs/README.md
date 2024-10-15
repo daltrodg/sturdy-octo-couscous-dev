@@ -6,4 +6,6 @@ Guitar App
 
 Pull Request from Dev-Mary to Main: https://github.com/daltrodg/sturdy-octo-couscous-dev/pull/4
 
+Open Issues that need to be addressed: https://github.com/daltrodg/sturdy-octo-couscous-dev/issues/5
+
 
