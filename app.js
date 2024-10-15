@@ -2,7 +2,6 @@ require('dotenv').config()
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const { urlencoded } = require('body-parser')
 const { ObjectId } = require('mongodb')
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://Dalton:${process.env.MONGO_URI}@cluster0.sv1mi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`; 
@@ -10,6 +9,7 @@ const uri = `mongodb+srv://Dalton:${process.env.MONGO_URI}@cluster0.sv1mi.mongod
 app.use(bodyParser.urlencoded({ extended: true }))
 app.set('view engine', 'ejs')
 app.use(express.static('./public/'))
+app.use(bodyParser.json());
 
 console.log(uri);
 
@@ -33,7 +33,7 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    //await client.close();
   }
 }
 run().catch(console.dir);
@@ -59,14 +59,16 @@ app.get('/read', async (req,res)=>{
 
 })
 
+const songData = client.db("daltons-db").collection("junkstuff-collection");
 
-app.get('/', function (req, res) {
+app.get('/', async function (req, res) {
   // res.send('Hello Node from Ex on local dev box')
-  res.sendFile('index.html');
+  await client.connect();
+  const results = await songData.find({}).toArray();
+  res.render('index', {songResults: results.reverse()});
 })
 
 app.get('/ejs', (req,res)=>{
-``
   res.render('index', {
     myServerVariable : "something from server"
   });
@@ -74,35 +76,34 @@ app.get('/ejs', (req,res)=>{
   //can you get content from client...to console? 
 })
 
-app.get('/insert', async (req,res)=> {
+app.post('/insert', async (req,res)=> {
 
   //connect to db 
   console.log('in /insert');
   await client.connect();
   //point to the connection
   console.log('connected?');
-  // Send a ping to confirm a successful connection
-  
-  let result = await client.db("daltons-db").collection("junkstuff-collection")
-    .insertOne({ post: 'hardcoded post insert' }); 
-  console.log(result);
-  //insert into it 
-  res.render('insert');
+  const {song, artist, link} = req.body;
+  //const songObj = {songName: song, songArtist: artist, songLink: link};
+  await songData.insertOne(req.body); 
+  console.log(req.body);
+
+  res.redirect('/')
 
 });
 
 app.post('/update/:id', async (req,res)=> {
 
   console.log("req.parms.id: ", req.params.id)
+  console.log(req.body); 
 
   client.connect; 
-  const collection = client.db("daltons-db").collection("junkstuff-collection");
-  let result = await collection.findOneAndUpdate( 
-  {"_id": new ObjectId(req.params.id)}, {$set: {"email": "blahblah@yaya.com" } }
+  let result = await songData.findOneAndUpdate( 
+  {"_id": new ObjectId(req.params.id)}, {$set: {songArtist: req.body.artist} }
 )
 .then(result => {
   console.log(result); 
-  res.redirect('/read');
+  res.redirect('/');
 })
 
 });
@@ -112,13 +113,12 @@ app.post('/delete/:id', async (req,res)=>{
   console.log("req.parms.id: ", req.params.id)
 
   client.connect; 
-  const collection = client.db("daltons-db").collection("junkstuff-collection");
-  let result = await collection.findOneAndDelete( 
+  let result = await songData.findOneAndDelete( 
   {"_id": new ObjectId(req.params.id)})
 
 .then(result => {
   console.log(result);
-  res.redirect('/read');
+  res.redirect('/');
 })
 });
 
